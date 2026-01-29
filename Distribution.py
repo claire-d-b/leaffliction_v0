@@ -34,7 +34,7 @@ def get_subdirs_with_image_count(parent_dir):
         subfolder_names = ['Base', 'Transformed', 'Augmented']
 
         for sname in subfolder_names:
-            item_path = f"{argv[1].removeprefix("./")}/{item}/{sname}"
+            item_path = f"{argv[1].removeprefix('./')}/{item}/{sname}"
 
             if Path(item_path).is_dir():
                 # Check if it's a directory

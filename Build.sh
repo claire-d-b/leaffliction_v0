@@ -2,7 +2,7 @@
 
 
 s_dir="./images"
-list_dir=$(find . -not -path $s_dir -not -path ./.git -mindepth 1 -maxdepth 1 -type d)
+list_dir=$(find . -mindepth 1 -maxdepth 1 -type d -not -path $s_dir -not -path ./.git )
 list_categories=$(find $s_dir -mindepth 1 -maxdepth 1 -type d)
 
 for dir in $list_categories;
@@ -14,7 +14,7 @@ for dir in $list_categories;
 				mkdir -p "$prefix";
 				npath=$prefix/$(basename "$dir");
 				mkdir -p "$npath/Base";
-				cp -r "$dir/" "$npath/Base/" && echo "  Moved $dir to $npath/Base";
+				cp -r $dir/* $npath/Base/ && echo "  Moved $dir to $npath/Base";
 				mkdir -p "$npath/Augmented" "$npath/Transformed";
 			else
 				echo "  Skipping $dir (no underscore found)";
