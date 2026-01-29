@@ -1,11 +1,13 @@
 #!/bin/bash
 
+shared_variable="Grape" # Change to Apple as needed
+
 # ********** APPLE OR GRAPE **********
 
 # Grape version :
 echo "processing train pictures' transformations...";
 for subdir in To_test/Train*/; do
-    if [[ "$subdir" == *"Apple"* ]]; then
+    if [[ "$subdir" == *$shared_variable* ]]; then
         echo "$subdir"
         ./Transformation.py "$subdir" &
     fi
@@ -14,7 +16,7 @@ wait
 
 # echo "processing train pictures' augmentations..."
 # for subdir in To_test/Train*/; do
-#     if [[ "$subdir" == *"Apple"* ]]; then
+#     if [[ "$subdir" == *$shared_variable* ]]; then
 #         echo "$subdir"
 #         ./Augmentation.py "$subdir" &
 #     fi
@@ -25,7 +27,7 @@ wait
 
 mv features.csv dataset_test_truth.csv;
 mv features_validation.csv dataset_test.csv;
-mv thetas_Apple.csv thetas_Apple_old.csv; # CHANGE BY APPLE IF NECESSARY
+mv thetas.csv thetas_old.csv;
 mv output_class_I.png output_class_I_old.png;
 mv statistics.csv statistics_old.csv;
 mv features_not_normalized.csv features_not_normalized_old.csv
@@ -33,7 +35,7 @@ mv features_not_normalized_validation.csv features_not_normalized_validation_old
 
 echo "processing test pictures' transformations...";
 for subdir in To_test/Test*/; do
-    if [[ "$subdir" == *"Apple"* ]]; then
+    if [[ "$subdir" == *$shared_variable* ]]; then
         echo "$subdir"
         ./Transformation.py "$subdir" &
     fi
@@ -42,7 +44,7 @@ wait
 
 # echo "processing test pictures' augmentations..."
 # for subdir in To_test/Test*/; do
-#     if [[ "$subdir" == *"Apple"* ]]; then
+#     if [[ "$subdir" == *$shared_variable* ]]; then
 #         echo "$subdir"
 #         ./Augmentation.py "$subdir" &
 #     fi
@@ -67,3 +69,30 @@ else
     sed -i 's/"Test_"/"Train_"/g' train.py
 
 fi;
+
+mv dataset_test_truth.csv dataset_test_truth_$shared_variable.csv;
+mv dataset_test.csv dataset_test_$shared_variable.csv;
+
+mv features.csv features_$shared_variable.csv;
+mv features_validation features_validation_$shared_variable.csv
+
+mv thetas.csv thetas_$shared_variable.csv;
+mv thetas_old.csv thetas_old_$shared_variable.csv;
+
+mv statistics.csv statistics_$shared_variable.csv;
+mv statistics_old.csv statistics_old_$shared_variable.csv;
+
+mv output_class_I.png output_class_I_$shared_variable.png
+mv output_class_I_old.png output_class_I_old_$shared_variable.png;
+mv output_class_II.png output_class_II_$shared_variable.png
+mv output_scurve.png output_scurve_$shared_variable.png
+
+mv features_not_normalized.csv features_not_normalized_$shared_variable.csv
+mv features_not_normalized_old.csv features_not_normalized_old_$shared_variable.csv
+mv features_not_normalized_validation.csv features_not_normalized_validation_$shared_variable.csv
+mv features_not_normalized_validation_old.csv features_not_normalized_validation_old_$shared_variable.csv
+
+mv categories.csv categories_$shared_variable.csv
+mv categories_truth.csv categories_truth_$shared_variable.csv
+
+zip -r learnings_$shared_variable.zip images/ thetas_$shared_variable.csv dataset_test_$shared_variable.csv dataset_test_truth_$shared_variable.csv categories_$shared_variable.csv categories_truth_$shared_variable.csv

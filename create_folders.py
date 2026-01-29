@@ -4,6 +4,7 @@ from pathlib import Path
 import random
 import shutil
 from sys import argv
+from Shared_variables import chosen_category
 
 
 def get_random_images(source_folder, n=25):
@@ -41,7 +42,7 @@ def copy_random_images(source_files, destination_folder, n=25):
 if __name__ == "__main__":
     try:
         if len(argv) == 1:
-            selected_type = "Apple"
+            selected_type = chosen_category
             directory = Path("images")
 
             # Get subdirectory Path objects from "images" directory,

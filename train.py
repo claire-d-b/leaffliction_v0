@@ -12,9 +12,9 @@ from sys import argv
 from pathlib import Path
 from Transformation import process_input_transformation
 from Augmentation import process_input_augmentation
+from Shared_variables import chosen_category
 
 
-ncat = "Apple" # Apple
 ntype = "Train_"
 ntypes = ["Train_*", "Test_*"]
 
@@ -34,7 +34,7 @@ def remove_prefixes(categories, prefixes):
 def train(arg=None):
     """Plot the attributes' values for training images and classify
     them"""
-    csv_files = (glob.glob(f"features_{ntype}{ncat}*.csv") if not arg
+    csv_files = (glob.glob(f"features_{ntype}{chosen_category}*.csv") if not arg
                  else glob.glob(f"features_{arg.removeprefix('./')}*.csv"))
 
     dfs = []
@@ -136,7 +136,7 @@ def train(arg=None):
 
     # Write reusable thetas to a file
 
-    f = open(f"thetas_{ncat}.csv", "w")
+    f = open(f"thetas.csv", "w")
     f.write(f"categories: {categories}\n")
     thetas_1 = [[float(x) for x in row] for row in w]
     f.write(f"theta_0: {bias}\ntheta_1: {thetas_1}")

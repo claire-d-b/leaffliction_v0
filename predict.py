@@ -14,9 +14,7 @@ from sys import argv
 from Transformation import process_input_transformation
 from pathlib import Path
 from strstr_extract import extract_known_categories
-
-
-ncat = "Apple" # Apple
+from Shared_variables import chosen_category
 
 
 def predict():
@@ -35,12 +33,12 @@ def predict():
     })
     df = df.reset_index(drop=False)
 
-    DataFrame(df.iloc[:, :2].to_csv(f"categories_truth_{ncat}.csv", header=True,
+    DataFrame(df.iloc[:, :2].to_csv(f"categories_truth.csv", header=True,
               index=False))
     ndf = load("dataset_test.csv")
     # ndf = normalize_df(ndf)
 
-    with open(f"thetas_{ncat}.csv", "r") as f:
+    with open(f"thetas.csv", "r") as f:
         lines = f.readlines()
         categories = ast.literal_eval(lines[0].split(":", 1)[1].strip())
         bias = ast.literal_eval(lines[1].split(":", 1)[1].strip())
@@ -113,7 +111,7 @@ def predict():
            for col in ndf.select_dtypes(include=[number]).columns}
     })
     ndf = ndf.reset_index(drop=False)
-    DataFrame(ndf.iloc[:, :2]).to_csv(f"categories_{ncat}.csv", header=True,
+    DataFrame(ndf.iloc[:, :2]).to_csv(f"categories.csv", header=True,
                                       index=False)
 
     for i in range(len(categories)):

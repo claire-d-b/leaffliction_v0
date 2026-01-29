@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pandas import read_csv
+from Shared_variables import chosen_category
 
 
 def basic_comparison(file1, file2):
@@ -41,8 +42,7 @@ def basic_comparison(file1, file2):
 
 if __name__ == "__main__":
     try:
-        basic_comparison("categories_Grape.csv", "categories_truth_Grape.csv")
-        basic_comparison("categories_Apple.csv", "categories_truth_Apple.csv")
+        basic_comparison(f"categories.csv", "categories_truth.csv")
 
     except AssertionError as error:
         print(f"{error}")

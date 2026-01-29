@@ -7,6 +7,7 @@ from glob import glob
 from strstr_extract import extract_known_categories
 import os
 from sys import argv
+from Shared_variables import chosen_category
 
 
 path_to_test_folder = ""
@@ -67,7 +68,7 @@ def copy_single_image(source_image, destination_folder):
 if __name__ == "__main__":
     try:
         if len(argv) == 1:
-            selected_type = "Apple"
+            selected_type = chosen_category
             directory = Path("images")
 
             # Get subdirectory Path objects from "images" directory,
