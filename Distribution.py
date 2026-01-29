@@ -113,19 +113,18 @@ def main():
         summed_info_values = subdirs_info.groupby('Directory\
 ')['Image_Count'].sum()
         summed_info_labels = subdirs_info.groupby('Directory\
-')['Directory'].sum()
+')['Directory'].unique().values
+        summed_info_labels = [str(label) for label in summed_info_labels]
         ax.pie(summed_info_values, labels=summed_info_labels,
                autopct='%1.1f%%')
         savefig(f"{parent_directory}/Distribution_Pie")
         ax.clear()
         fig.clf()
         close(fig)
+        print(summed_info_labels)
 
         fig, ax = subplots()
-        bars = ax.bar([i for i, x in enumerate((
-                      summed_info_values.astype(int)))],
-                      summed_info_values.astype(int),
-                      label=summed_info_labels)
+        bars = ax.bar(summed_info_labels, summed_info_values)
         total = sum(summed_info_values)
         ax.bar_label(bars, fmt=lambda x: f'{100*x/total:.1f}%')
         ax.set_ylim(bottom=0)
