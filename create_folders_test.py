@@ -10,7 +10,7 @@ from sys import argv
 from Shared_variables import chosen_category
 
 
-path_to_test_folder = ""
+path_to_test_folder = "Unit/Unit_test2/Base"
 
 
 def get_random_images(source_folder, n=25):
@@ -87,7 +87,7 @@ if __name__ == "__main__":
 folder name for images to test.")
 
             else:
-                images = sorted(glob(path_to_test_folder))
+                images = sorted(glob(f"{path_to_test_folder}/*.JPG"))
                 for img in images:
                     # On copie chaque image du set de test, le nom
                     # de ces images doit contenir la catégorie pour
@@ -109,18 +109,20 @@ Augmented").mkdir(parents=True, exist_ok=True)
                     # d'images par classe.
                     folder_path = f"To_test/Train_\
 {Path(subdir).name}/Base/"
+                    print("fpath", folder_path)
                     num_files = (len([f for f in os.listdir(folder_path)
                                       if os.path.isfile(os.path.join(
                                                         folder_path, f
                                                         ))]))
+                    print("nunu", num_files)
 
                     # Soustraire au nombre d'images injectées le nombre
                     # d'images déjà présentes.
-                    images = get_random_images(subdir, n=(200 - num_files))
-                    copy_random_images(images[:40 - num_files], f"To_test/\
-Train_{Path(subdir).name}/Base/", n=(40 - num_files))
-                    copy_random_images(images[40 - num_files:200], f"To_test/\
-Test_{Path(subdir).name}/Base/", n=(200 - (40 - num_files)))
+                    images = get_random_images(subdir, n=(10 - num_files))
+                    copy_random_images(images[:2 - num_files], f"To_test/\
+Train_{Path(subdir).name}/Base/", n=(2 - num_files))
+                    copy_random_images(images[2 - num_files:10], f"To_test/\
+Test_{Path(subdir).name}/Base/", n=(10 - (2 - num_files)))
 
                     Path(f"To_test/Test_{Path(subdir).name}/\
 Transformed").mkdir(parents=True, exist_ok=True)
