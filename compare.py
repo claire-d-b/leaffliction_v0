@@ -42,7 +42,7 @@ def basic_comparison(file1, file2):
 
 if __name__ == "__main__":
     try:
-        basic_comparison(f"categories.csv", "categories_truth.csv")
+        basic_comparison(f"categories_{chosen_category}.csv", f"categories_truth_{chosen_category}.csv")
 
     except AssertionError as error:
         print(f"{error}")

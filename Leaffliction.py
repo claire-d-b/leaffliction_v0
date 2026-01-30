@@ -60,7 +60,7 @@ to all images in a specific folder and its subfolders.'
 categories.csv.'
             }
         },
-        './create_folders_test.py':
+        './create_folders_new_image.py':
         {
             'parameters':
             {
