@@ -13,6 +13,7 @@ from numpy import number, dot
 from sys import argv
 from Transformation import process_input_transformation
 from pathlib import Path
+import zipfile
 from strstr_extract import extract_known_categories
 from Shared_variables import chosen_category
 
@@ -38,6 +39,11 @@ def predict():
     ndf = load(f"dataset_test_{chosen_category}.csv")
     # ndf = normalize_df(ndf)
 
+    zip_path = 'learnings.zip'
+    extract_to = './'  # Project root
+
+    with zipfile.ZipFile(zip_path, 'r') as zf:
+        zf.extractall(extract_to)
     with open(f"thetas_{chosen_category}.csv", "r") as f:
         lines = f.readlines()
         categories = ast.literal_eval(lines[0].split(":", 1)[1].strip())

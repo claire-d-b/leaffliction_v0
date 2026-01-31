@@ -159,7 +159,9 @@ def train(arg=None):
             for file in Path(arg).rglob('*'):
                 if file.is_file():
                     zf.write(file, arcname=f"{arg}_{chosen_category}")
-
+    file = Path(f"thetas_{chosen_category}.csv")
+    if file.exists():
+        file.unlink()
 
 if __name__ == "__main__":
     try:

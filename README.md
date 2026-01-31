@@ -14,7 +14,8 @@ To choose what specie (Apple or Grape), change Shared_variables' chosen_category
 ./create_random_dataset.py # creates images in Dataset/ folder
 ./train.py ./Dataset # train on those data
 
-./create_random_dataset_new_image.py # creates images in New/ folder
-./create_csv_from_dataset.py # creates a dataset to classify with new images
+./create_random_dataset_new_image.py # Before that, delete features\*.csv.
+Creates images in New/ folder
+./create_csv_from_dataset.py ./New # creates a dataset to classify with new images
 
 ./predict.py ./New # applies thetas from the zip to a dataset that contains path_to_image argument
