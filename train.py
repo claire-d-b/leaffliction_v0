@@ -13,10 +13,7 @@ from pathlib import Path
 from Transformation import process_input_transformation
 from Augmentation import process_input_augmentation
 from Shared_variables import chosen_category
-
-
-ntype = "Train_"
-ntypes = ["Train_*", "Test_*"]
+import zipfile
 
 
 def remove_prefixes(categories, prefixes):
@@ -34,8 +31,7 @@ def remove_prefixes(categories, prefixes):
 def train(arg=None):
     """Plot the attributes' values for training images and classify
     them"""
-    csv_files = (glob.glob(f"features_{ntype}{chosen_category}*.csv") if not arg
-                 else glob.glob(f"features_{arg.removeprefix('./')}*.csv"))
+    csv_files = glob.glob(f"features_{chosen_category}_*.csv")
 
     dfs = []
     for i, file in enumerate(csv_files):
@@ -55,26 +51,16 @@ def train(arg=None):
 
     origin_df = concat(dfs, ignore_index=True)
 
-    for nntype in ntypes:
-        origin_df['Category'] = origin_df['Category'].str.replace(f'\
-{nntype}', '', regex=False)
-
-        # Remove trailing numbers using regex=True
-        origin_df['Category'] = origin_df['Category'].str.replace(r'\d+$', '\
-', regex=True)
-
-        # Remove trailing underscores
-        origin_df['Category'] = origin_df['Category'].str.rstrip('_')
-
-    origin_df.to_csv("features_not_normalized.csv", mode="w",
-                     header=True, index=False)
-    new_df = load("features_not_normalized.csv")
-    new_df['Category'] = None
-    new_df = new_df.reset_index(drop=False)
-    new_df.to_csv("features_not_normalized_validation.csv", mode="w",
-                  header=True, index=False)
+    # origin_df.to_csv("features_not_normalized.csv", mode="w",
+    #                  header=True, index=False)
+    # new_df = load("features_not_normalized.csv")
+    # new_df['Category'] = None
+    # new_df = new_df.reset_index(drop=False)
+    # new_df.to_csv("features_not_normalized_validation.csv", mode="w",
+    #               header=True, index=False)
 
     origin_df = z_score_normalize_df(origin_df)
+    categories = sorted(origin_df['Category'].unique().tolist())
 
     origin_df = origin_df.groupby("Subname").agg({
         'Category': lambda x: x.mode()[0] if len(x.mode()) > 0 else x.iloc[0],
@@ -87,26 +73,20 @@ def train(arg=None):
 
     repr_df = origin_df.copy()
 
-    origin_df['Category'] = origin_df['Category'].str.replace(ntype, '\
-', regex=False)
+    # origin_df.to_csv("dataset_test_truth.csv", index=False)
+    # norigin_df = origin_df.copy()
+    # origin_df['Category'] = None
+    # norigin_df.to_csv("dataset_test.csv", index=False)
 
-    origin_df.to_csv("features.csv", index=False)
-    norigin_df = origin_df.copy()
-    norigin_df['Category'] = None
-    norigin_df.to_csv("features_validation.csv", index=False)
+    # df_subname = origin_df.iloc[:, [0]]
+    # df_house = origin_df.iloc[:, [1]]
+    # df_course = origin_df.iloc[:, 2:]
 
-    categories = sorted(origin_df['Category'].unique().tolist())
+    # df = concat([df_subname, df_house], axis=1)
+    # df = concat([df, df_course], axis=1)
 
-    df_subname = origin_df.iloc[:, [0]]
-    df_house = origin_df.iloc[:, [1]]
-    df_course = origin_df.iloc[:, 2:]
-
-    df = concat([df_subname, df_house], axis=1)
-    df = concat([df, df_course], axis=1)
-
-    df = df.sort_values(by='Category')
-    summed_df = df.groupby("Category\
-", as_index=False).median(numeric_only=True)
+    # df = df.sort_values(by='Category')
+    summed_df = origin_df.groupby("Category", as_index=False).median(numeric_only=True)
 
     w = []
     b = []
@@ -136,7 +116,7 @@ def train(arg=None):
 
     # Write reusable thetas to a file
 
-    f = open(f"thetas.csv", "w")
+    f = open(f"thetas_{chosen_category}.csv", "w")
     f.write(f"categories: {categories}\n")
     thetas_1 = [[float(x) for x in row] for row in w]
     f.write(f"theta_0: {bias}\ntheta_1: {thetas_1}")
@@ -160,30 +140,51 @@ def train(arg=None):
     clf()
     close()
 
+    zip_path = Path('learnings.zip')
+
+    if zip_path.exists():
+    # Add to existing zip
+        with zipfile.ZipFile(zip_path, 'a') as zf:
+            zf.write(f'thetas_{chosen_category}.csv')
+        
+            # Add entire folder recursively
+            for file in Path(arg).rglob('*'):
+                if file.is_file():
+                    zf.write(file, arcname=f"{arg}_{chosen_category}")
+    # Create a new zip file
+    else:
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.write(f'thetas_{chosen_category}.csv')
+            
+            for file in Path(arg).rglob('*'):
+                if file.is_file():
+                    zf.write(file, arcname=f"{arg}_{chosen_category}")
+
 
 if __name__ == "__main__":
     try:
-        if len(argv) == 1:
-            train()
+        # if len(argv) == 1:
+        #     train()
 
-        elif len(argv) == 2:
+        if len(argv) == 2:
 
             directory = Path(argv[1])
 
             subdirs = [d for d in directory.iterdir() if d.is_dir()]
             subdirs = [str(d) for d in directory.iterdir() if d.is_dir()]
-            print(subdirs)
+            print("subdirectories", subdirs)
 
             for subdir in subdirs:
                 files = glob.glob(f"{subdir}")
                 for file in files:
                     process_input_transformation(file, openImage=False,
                                                  single=False)
-            for subdir in subdirs:
-                files = glob.glob(f"{subdir}")
-                for file in files:
-                    process_input_augmentation(file, openImage=False,
-                                               single=False)
+            # for subdir in subdirs:
+            #     files = glob.glob(f"{subdir}")
+            #     for file in files:
+            #         process_input_augmentation(file, openImage=False,
+            #                                    single=False)
+            train(argv[1].removeprefix("./"))
         else:
             print("Unknown command. Please type ./Leaffliction.py \
 --help to display available commands.")

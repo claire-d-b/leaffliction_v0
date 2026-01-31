@@ -10,10 +10,11 @@ To choose what specie (Apple or Grape), change Shared_variables' chosen_category
 
 ./Clean.sh
 ./Build.sh
-./create_folders.py
-./To_test.sh
 
-./Clean.sh
-./Build.sh
-./create_folders_new_image.py
-./To_test_new_image.py
+./create_random_dataset.py # creates images in Dataset/ folder
+./train.py ./Dataset # train on those data
+
+./create_random_dataset_new_image.py # creates images in New/ folder
+./create_csv_from_dataset.py # creates a dataset to classify with new images
+
+./predict.py ./New # applies thetas from the zip to a dataset that contains path_to_image argument

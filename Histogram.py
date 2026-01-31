@@ -10,6 +10,7 @@ from os import path
 from pandas import DataFrame, concat, read_csv
 from utils import load
 import glob
+from Shared_variables import chosen_category
 
 
 # Helper to calculate histogram
@@ -138,7 +139,7 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
             file_path = file
 
             name_without_ext = Path(file_path).stem  # "image (263)_hsv"
-
+            print("name", file)
             # Split from the right, limiting to 1 split
             parts = name_without_ext.rsplit('_', 1)
             # parts = ["image (263)", "hsv"]
@@ -147,12 +148,23 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
             modif = parts[1]  # "hsv"
             dstname = f"{dst}{path.splitext(path.basename(nsrc))[0]}_{modif}"
 
+            VALID_CATEGORIES = ["Grape_Black_rot", "Grape_Esca",
+                            "Grape_healthy", "Grape_spot"] if chosen_category == "Grape" else \
+                            ["Apple_Black_rot", "Apple_healthy",
+                            "Apple_rust", "Apple_scab"]
+
+            # Chercher la vraie catégorie
+            extracted_category = None
+            for cat in VALID_CATEGORIES:
+                if cat in file:
+                    extracted_category = cat
+                    break
             dictionary = dict({
                             "Subname": f"{Path(dstname).name.split('_')[0]}_\
-{Path(dstname).parts[1]}",
+{Path(dstname).parts[1]}_{extracted_category}",
                             "Name": f"{Path(dstname).name.split('_')[0]}_\
 {Path(dstname).parts[1]}_{'_'.join(Path(dstname).name.split('_')[1:])}",
-                            "Category": f"{Path(dstname).parts[1]}",
+                            "Category": f"{extracted_category}",
                             "Modification": f"\
 {'_'.join(Path(dstname).name.split('_')[1:])}",
                             "Red": r_hist_avg.flatten(),
@@ -168,87 +180,91 @@ def plot_multiple_images_histogram(image_files, src, dst, ndst, category,
 
             ndst = Path(dst).parent
 
-            if path.exists(f'{dst}{Path(dstname).parts[1]}_\
+            print("etx", extracted_category)
+
+            if extracted_category:
+
+                if path.exists(f'{dst}{Path(dstname).parts[1]}_\
 {category}_features.csv'):
-                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+                    ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
 {category}_features.csv', mode='a', header=False)
-            else:
-                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+                else:
+                    ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
 {category}_features.csv', mode='w', index=True)
 
-            newdf = load(f"{dst}{Path(dstname).parts[1]}_\
+                newdf = load(f"{dst}{Path(dstname).parts[1]}_\
 {category}_features.csv")
-            nndf = newdf.groupby(['Subname', 'Name', 'Category',
-                                  'Modification']).median(numeric_only=True)
-            nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{category}_\
+                nndf = newdf.groupby(['Subname', 'Name', 'Category',
+                                    'Modification']).median(numeric_only=True)
+                nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{category}_\
 features_test.csv", mode='w')
 
-        if category == "Transformed":
-            pattern = f"**/*{Path(dstname).parts[1]}_Transformed_\
+                if category == "Transformed":
+                    pattern = f"**/*{Path(dstname).parts[1]}_Transformed_\
 features_test.csv"
 
-            csv_files = glob.glob(pattern, recursive=True)
+                    csv_files = glob.glob(pattern, recursive=True)
 
-            # Combine files with only one header
-            dfs = []
-            for i, file in enumerate(csv_files):
-                try:
-                    if i == 0:
-                        # First file: keep header
-                        df = read_csv(file)
-                    else:
-                        # Subsequent files: skip header (first row)
-                        df = read_csv(file, skiprows=1, header=None)
-                        # Use column names from the first dataframe
-                        df.columns = dfs[0].columns
+                    # Combine files with only one header
+                    dfs = []
+                    for i, file in enumerate(csv_files):
+                        try:
+                            if i == 0:
+                                # First file: keep header
+                                df = read_csv(file)
+                            else:
+                                # Subsequent files: skip header (first row)
+                                df = read_csv(file, skiprows=1, header=None)
+                                # Use column names from the first dataframe
+                                df.columns = dfs[0].columns
 
-                    dfs.append(df)
-                except Exception as err:
-                    print(f"warning: {err}")
-                    continue
+                            dfs.append(df)
+                        except Exception as err:
+                            print(f"warning: {err}")
+                            continue
 
-            combined_df = concat(dfs, ignore_index=True)
-            test_df = combined_df.copy()
-            file = Path(f"{Path(dstname).parts[1]}")
+                    combined_df = concat(dfs, ignore_index=True)
+                    test_df = combined_df.copy()
+                    file = Path(f"{Path(dstname).parts[1]}")
 
-            if file.exists():
-                test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+                    if file.exists():
+                        test_df.to_csv(f"features_{Path(dstname).parts[1]}\
 .csv", mode="a", header=False)
-                test_df.to_csv(f"features_{Path(dstname).parts[1]}_test\
+                        test_df.to_csv(f"features_{Path(dstname).parts[1]}_test\
 .csv", mode="a", header=False, index=False)
-            else:
-                test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+                    else:
+                        test_df.to_csv(f"features_{Path(dstname).parts[1]}\
 .csv", mode="w", header=True)
-                test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+                        test_df.to_csv(f"features_{Path(dstname).parts[1]}\
 .csv", mode="w", header=True, index=False)
 
-    if valid_images:
-        # Plot averaged histograms
-        axs.plot(b_hist_avg, color='b', label='Blue')
-        axs.plot(A_hist_avg, color='yellow', label='Blue-Yellow')
-        axs.plot(g_hist_avg, color='g', label='Green')
-        axs.plot(B_hist_avg, color='fuchsia', label='Green-magenta')
-        axs.plot(h_hist_avg, color='purple', label='Hue')
-        axs.plot(l_hist_avg, color='gray', label='Lightness')
-        axs.plot(r_hist_avg, color='r', label='Red')
-        axs.plot(s_hist_avg, color='cyan', label='Saturation')
-        axs.plot(v_hist_avg, color='orange', label='Value')
+            if valid_images:
+                # Plot averaged histograms
+                axs.plot(b_hist_avg, color='b', label='Blue')
+                axs.plot(A_hist_avg, color='yellow', label='Blue-Yellow')
+                axs.plot(g_hist_avg, color='g', label='Green')
+                axs.plot(B_hist_avg, color='fuchsia', label='Green-magenta')
+                axs.plot(h_hist_avg, color='purple', label='Hue')
+                axs.plot(l_hist_avg, color='gray', label='Lightness')
+                axs.plot(r_hist_avg, color='r', label='Red')
+                axs.plot(s_hist_avg, color='cyan', label='Saturation')
+                axs.plot(v_hist_avg, color='orange', label='Value')
 
-        title(f'Average Color Histogram - {valid_images} Images')
-        xlabel('Pixel Intensity')
-        ylabel('Average Proportion of pixels')
-        ylim(0, 10)
+                title(f'Average Color Histogram - {valid_images} Images')
+                xlabel('Pixel Intensity')
+                ylabel('Average Proportion of pixels')
+                ylim(0, 10)
 
-        handles, labels = axs.get_legend_handles_labels()
-        unique = dict(zip(labels, handles))
-        legend(unique.values(), unique.keys())
+                handles, labels = axs.get_legend_handles_labels()
+                unique = dict(zip(labels, handles))
+                legend(unique.values(), unique.keys())
 
-        output_path = f"{ndst}_color_histogram_multiple.png"
-        savefig(output_path)
+                output_path = f"{ndst}_color_histogram_multiple.png"
+                savefig(output_path)
 
-        axs.clear()
-        fig.clf()
-        close(fig)
+    axs.clear()
+    fig.clf()
+    close(fig)
 
 
 def plot_single_image_histogram(image_files, src, dst, ndst, category,
@@ -361,14 +377,14 @@ def plot_single_image_histogram(image_files, src, dst, ndst, category,
         dstname = f"{dst}{path.splitext(path.basename(nsrc))[0]}"
 
         VALID_CATEGORIES = ["Grape_Black_rot", "Grape_Esca",
-                            "Grape_healthy", "Grape_spot",
-                            "Apple_Black_rot", "Apple_healthy",
+                            "Grape_healthy", "Grape_spot"] if chosen_category == "Grape" else \
+                            ["Apple_Black_rot", "Apple_healthy",
                             "Apple_rust", "Apple_scab"]
 
         # Chercher la vraie catégorie
         extracted_category = None
         for cat in VALID_CATEGORIES:
-            if cat in name_without_ext:
+            if cat in file:
                 extracted_category = cat
                 break
         dictionary = dict({
@@ -389,86 +405,87 @@ def plot_single_image_histogram(image_files, src, dst, ndst, category,
                         "Value": v_hist_avg.flatten()})
         ndf = DataFrame(dictionary)
 
-        ndst = Path(dst).parent
+        if extracted_category:
+            ndst = Path(dst).parent
 
-        if path.exists(f'{dst}{Path(dstname).parts[1]}_\
+            if path.exists(f'{dst}{Path(dstname).parts[1]}_\
 {extracted_category}_features.csv'):
-            ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
 {extracted_category}_features.csv', mode='a', header=False)
-        else:
-            ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
+            else:
+                ndf.to_csv(f'{dst}{Path(dstname).parts[1]}_\
 {extracted_category}_features.csv', mode='w', index=True)
 
-        newdf = load(f"{dst}{Path(dstname).parts[1]}_\
+            newdf = load(f"{dst}{Path(dstname).parts[1]}_\
 {extracted_category}_features.csv")
-        nndf = newdf.groupby(['Subname', 'Name', 'Category',
-                              'Modification']).median(numeric_only=True)
-        nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{extracted_category}_\
+            nndf = newdf.groupby(['Subname', 'Name', 'Category',
+                                'Modification']).median(numeric_only=True)
+            nndf.to_csv(f"{dst}{Path(dstname).parts[1]}_{extracted_category}_\
 features_test.csv", mode='w')
 
-    if category == "Transformed":
-        pattern = f"**/*{Path(dstname).parts[1]}_Transformed_\
+            if category == "Transformed":
+                pattern = f"**/*{Path(dstname).parts[1]}_Transformed_\
 features_test.csv"
 
-        csv_files = glob.glob(pattern, recursive=True)
+                csv_files = glob.glob(pattern, recursive=True)
 
-        # Combine files with only one header
-        dfs = []
-        for i, file in enumerate(csv_files):
-            try:
-                if i == 0:
-                    # First file: keep header
-                    df = read_csv(file)
-                else:
-                    # Subsequent files: skip header (first row)
-                    df = read_csv(file, skiprows=1, header=None)
-                    # Use column names from the first dataframe
-                    df.columns = dfs[0].columns
+                # Combine files with only one header
+                dfs = []
+                for i, file in enumerate(csv_files):
+                    try:
+                        if i == 0:
+                            # First file: keep header
+                            df = read_csv(file)
+                        else:
+                            # Subsequent files: skip header (first row)
+                            df = read_csv(file, skiprows=1, header=None)
+                            # Use column names from the first dataframe
+                            df.columns = dfs[0].columns
 
-                dfs.append(df)
-            except Exception as e:
-                print(f"warning: {e}")
-                continue
+                        dfs.append(df)
+                    except Exception as e:
+                        print(f"warning: {e}")
+                        continue
 
-        combined_df = concat(dfs, ignore_index=True)
-        test_df = combined_df.copy()
-        file = Path(f"{Path(dstname).parts[1]}")
+                combined_df = concat(dfs, ignore_index=True)
+                test_df = combined_df.copy()
+                file = Path(f"{Path(dstname).parts[1]}")
 
-        if file.exists():
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+                if file.exists():
+                    test_df.to_csv(f"features_{Path(dstname).parts[1]}\
 .csv", mode="a", header=False)
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}_test\
+                    test_df.to_csv(f"features_{Path(dstname).parts[1]}_test\
 .csv", mode="a", header=False, index=False)
-        else:
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+                else:
+                    test_df.to_csv(f"features_{Path(dstname).parts[1]}\
 .csv", mode="w", header=True)
-            test_df.to_csv(f"features_{Path(dstname).parts[1]}\
+                    test_df.to_csv(f"features_{Path(dstname).parts[1]}\
 .csv", mode="w", header=True, index=False)
 
-    if valid_images:
-        # Plot averaged histograms
-        axs.plot(b_hist_avg, color='b', label='Blue')
-        axs.plot(A_hist_avg, color='yellow', label='Blue-Yellow')
-        axs.plot(g_hist_avg, color='g', label='Green')
-        axs.plot(B_hist_avg, color='fuchsia', label='Green-magenta')
-        axs.plot(h_hist_avg, color='purple', label='Hue')
-        axs.plot(l_hist_avg, color='gray', label='Lightness')
-        axs.plot(r_hist_avg, color='r', label='Red')
-        axs.plot(s_hist_avg, color='cyan', label='Saturation')
-        axs.plot(v_hist_avg, color='orange', label='Value')
+            if valid_images:
+                # Plot averaged histograms
+                axs.plot(b_hist_avg, color='b', label='Blue')
+                axs.plot(A_hist_avg, color='yellow', label='Blue-Yellow')
+                axs.plot(g_hist_avg, color='g', label='Green')
+                axs.plot(B_hist_avg, color='fuchsia', label='Green-magenta')
+                axs.plot(h_hist_avg, color='purple', label='Hue')
+                axs.plot(l_hist_avg, color='gray', label='Lightness')
+                axs.plot(r_hist_avg, color='r', label='Red')
+                axs.plot(s_hist_avg, color='cyan', label='Saturation')
+                axs.plot(v_hist_avg, color='orange', label='Value')
 
-        title(f'Average Color Histogram - {valid_images} Images')
-        xlabel('Pixel Intensity')
-        ylabel('Average Proportion of pixels')
-        ylim(0, 10)
+                title(f'Average Color Histogram - {valid_images} Images')
+                xlabel('Pixel Intensity')
+                ylabel('Average Proportion of pixels')
+                ylim(0, 10)
 
-        handles, labels = axs.get_legend_handles_labels()
-        unique = dict(zip(labels, handles))
-        legend(unique.values(), unique.keys())
+                handles, labels = axs.get_legend_handles_labels()
+                unique = dict(zip(labels, handles))
+                legend(unique.values(), unique.keys())
 
-        output_path = f"{ndst}_color_histogram_multiple.png"
-        savefig(output_path)
+                output_path = f"{ndst}_color_histogram_multiple.png"
+                savefig(output_path)
 
-        axs.clear()
-        fig.clf()
-        close(fig)
+    axs.clear()
+    fig.clf()
+    close(fig)

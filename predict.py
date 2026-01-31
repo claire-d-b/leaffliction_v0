@@ -131,8 +131,9 @@ who would probably belong to {categories[i]}")
 if __name__ == "__main__":
     try:
         if len(argv) == 1:
-            predict()
+            predict() # dataset pred
         elif len(argv) == 2:
+            # single pred
             arg = Path(argv[1]).name.split('_', 1)[0]
             if Path(f"categories_{arg}.csv").exists():
                 df = read_csv(f"categories_{arg}.csv")
@@ -142,7 +143,7 @@ if __name__ == "__main__":
                                                 lines[0].split(
                                                 ":", 1)[1].strip())
 
-                category = extract_knowsn_categories(argv[1], categories)
+                category = extract_known_categories(argv[1], categories)
                 folder = Path(argv[1]).name.split('_', 1)[0]
                 subname = f"{folder}_Train_{category}"
 
