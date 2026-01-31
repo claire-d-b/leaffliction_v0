@@ -118,10 +118,10 @@ Augmented").mkdir(parents=True, exist_ok=True)
 
                     # Soustraire au nombre d'images injectées le nombre
                     # d'images déjà présentes.
-                    images = get_random_images(subdir, n=(20 - num_files))
+                    images = get_random_images(subdir, n=(25 - num_files))
 
-                    copy_random_images(images[2 - num_files:20], f"To_test/\
-Train_{Path(subdir).name}/Base/", n=(20 - (2 - num_files)))
+                    copy_random_images(images[1 - num_files:25], f"To_test/\
+Train_{Path(subdir).name}/Base/", n=(25 - (1 - num_files)))
 
                     Path(f"To_test/Test_{Path(subdir).name}/\
 Base").mkdir(parents=True, exist_ok=True)
