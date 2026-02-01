@@ -10,7 +10,7 @@ from sys import argv
 from Shared_variables import chosen_category
 
 
-path_to_test_folder = "Unit/Unit_test2/Base"
+path_to_test_folder = "Unit/Unit_test1/Base"
 
 
 def get_random_images(source_folder, n=5):
@@ -90,7 +90,7 @@ folder name for images to test.")
                 images = sorted(glob(f"{path_to_test_folder}/*.JPG"))
                 # On crée des directories pour les images
                 # transformées, ou si besoin augmentées.
-
+                
                 for subdir in selected_subdirs:
                     Path(f"New/{Path(subdir).name}/Base").mkdir(parents=True, exist_ok=True)
                     Path(f"New/{Path(subdir).name}/Transformed").mkdir(parents=True, exist_ok=True)

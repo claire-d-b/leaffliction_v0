@@ -31,7 +31,8 @@ def remove_prefixes(categories, prefixes):
 def create_csv_from_random_dataset(arg=None):
     """Plot the attributes' values for training images and classify
     them"""
-    csv_files = glob.glob(f"{arg}/**/{chosen_category}_*_Transformed_features_test.csv")
+    csv_files = glob.glob(f"{arg}/{chosen_category}_*/{chosen_category}_*_Transformed_features_test.csv")
+    print("phrase", f"{arg}/{chosen_category}_*/{chosen_category}_*_Transformed_features_test.csv")
     print("csv files", csv_files)
 
     dfs = []
@@ -81,17 +82,17 @@ def create_csv_from_random_dataset(arg=None):
 
 if __name__ == "__main__":
     try:
-        # directory = Path(argv[1])
+        directory = Path(argv[1])
 
-        # subdirs = [d for d in directory.iterdir() if d.is_dir()]
-        # subdirs = [str(d) for d in directory.iterdir() if d.is_dir()]
-        # # print("subdirectories", subdirs)
+        subdirs = [d for d in directory.iterdir() if d.is_dir()]
+        subdirs = [str(d) for d in directory.iterdir() if d.is_dir()]
+        # print("subdirectories", subdirs)
 
-        # for subdir in subdirs:
-        #     files = glob.glob(f"{subdir}")
-        #     for file in files:
-        #         process_input_transformation(file, openImage=False,
-        #                                         single=False)
+        for subdir in subdirs:
+            files = glob.glob(f"{subdir}")
+            for file in files:
+                process_input_transformation(file, openImage=False,
+                                                single=False)
         # for subdir in subdirs:
         #     files = glob.glob(f"{subdir}")
         #     for file in files:

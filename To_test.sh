@@ -1,6 +1,6 @@
 #!/bin/bash
 
-shared_variable="Grape" # Change to Apple as needed
+shared_variable="Apple" # Change to Apple as needed
 
 # ********** APPLE OR GRAPE **********
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-shared_variable="Grape" # Change to Apple as needed
+shared_variable="Apple" # Change to Apple as needed
 s_dir="./images"
 z_dir="./learnings_$shared_variable.zip"
 build=$(find . -not -path $s_dir -not -path ./.git -not -path $z_dir -mindepth 1 -maxdepth 1 -type d)

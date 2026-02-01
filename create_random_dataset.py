@@ -55,11 +55,19 @@ if __name__ == "__main__":
             print([d.name for d in selected_subdirs])
 
             for subdir in selected_subdirs:
-                images = get_random_images(subdir, n=25)
-                copy_random_images(images, f"Dataset/{Path(subdir).name}/Base/", n=25)
-                Path(f"Dataset/{Path(subdir).name}/\
+                images = get_random_images(subdir, n=100)
+                copy_random_images(images[:20],
+                                   f"Dataset_Test/{Path(subdir).name}/Base/", n=20)
+                Path(f"Dataset_Test/{Path(subdir).name}/\
 Transformed").mkdir(parents=True, exist_ok=True)
-                Path(f"Dataset/{Path(subdir).name}/\
+                Path(f"Dataset_Test/{Path(subdir).name}/\
+Augmented").mkdir(parents=True, exist_ok=True)
+
+                copy_random_images(images[20:100],
+                                   f"Dataset_Train/{Path(subdir).name}/Base/", n=80)
+                Path(f"Dataset_Train/{Path(subdir).name}/\
+Transformed").mkdir(parents=True, exist_ok=True)
+                Path(f"Dataset_Train/{Path(subdir).name}/\
 Augmented").mkdir(parents=True, exist_ok=True)
 
         else:

@@ -49,15 +49,15 @@ specified directory.',
             'parameters':
             {
                 '<directory>': 'Apply transformations and augmentations \
-to all images in a specific folder and its subfolders.'
+to all images in a specific folder and its subfolders. Train the model and \
+saves thetas and images into a zip.'
             }
         },
         './predict.py':
         {
             'parameters':
             {
-                '<file>': 'Predict a single image class by parsing \
-categories.csv.'
+                '<file>': 'Predict a single image class or classify in a given dataset.'
             }
         },
         './create_random_dataset_new_image.py':
@@ -68,7 +68,7 @@ categories.csv.'
 (40 vs 160), including new images.'
             }
         },
-        './create_folders.py':
+        './create_random_dataset.py':
         {
             'parameters':
             {
@@ -76,12 +76,12 @@ categories.csv.'
 (40 vs 160).'
             }
         },
-        './To_test.sh':
+        './create_csv_from_dataset.py':
         {
             'parameters':
             {
-                '<None>': 'Perform logistic regression and predict \
-random images based on learnings.'
+                '<folder>': 'Creates a csv based on a folder specific images. \
+The csv will be used for classification purposes.
             }
         }
     }
