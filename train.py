@@ -143,7 +143,8 @@ def train(arg=None):
     zip_path = Path('learnings.zip')
 
     if zip_path.exists():
-    # Add to existing zip
+        print("ici")
+        # Add to existing zip
         with zipfile.ZipFile(zip_path, 'a') as zf:
             zf.write(f'thetas_{chosen_category}.csv')
         
@@ -153,6 +154,7 @@ def train(arg=None):
                     zf.write(file, arcname=f"{arg}_{chosen_category}")
     # Create a new zip file
     else:
+        print("la")
         with zipfile.ZipFile(zip_path, 'w') as zf:
             zf.write(f'thetas_{chosen_category}.csv')
             

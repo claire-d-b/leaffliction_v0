@@ -12,7 +12,7 @@ To choose what specie (Apple or Grape), change Shared_variables' chosen_category
 ./Build.sh
 
 ./create_random_dataset.py # creates images in Dataset/ folder
-./train.py ./Dataset # train on those data
+./train.py ./Dataset # train on those data.
 
 ./create_random_dataset_new_image.py # Before that, delete features\*.csv.
 Creates images in New/ folder

@@ -88,6 +88,14 @@ folder name for images to test.")
 
             else:
                 images = sorted(glob(f"{path_to_test_folder}/*.JPG"))
+                # On crée des directories pour les images
+                # transformées, ou si besoin augmentées.
+
+                for subdir in selected_subdirs:
+                    Path(f"New/{Path(subdir).name}/Base").mkdir(parents=True, exist_ok=True)
+                    Path(f"New/{Path(subdir).name}/Transformed").mkdir(parents=True, exist_ok=True)
+                    Path(f"New/{Path(subdir).name}/Augmented").mkdir(parents=True, exist_ok=True)
+
                 for img in images:
                     # On copie chaque image du set de test, le nom
                     # de ces images doit contenir la catégorie pour
@@ -95,14 +103,7 @@ folder name for images to test.")
                     copy_single_image(img,
                                       f"New/{extract_known_categories(
                                       Path(Path(img).name).stem, categories)}/Base/")
-                    # On crée des directories pour les images
-                    # transformées, ou si besoin augmentées.
 
-                for subdir in selected_subdirs:
-
-                    Path(f"New/{Path(subdir).name}/Base").mkdir(parents=True, exist_ok=True)
-                    Path(f"New/{Path(subdir).name}/Transformed").mkdir(parents=True, exist_ok=True)
-                    Path(f"New/{Path(subdir).name}/Augmented").mkdir(parents=True, exist_ok=True)
 
         else:
             print("Unknown command. Please type ./Leaffliction.py \
