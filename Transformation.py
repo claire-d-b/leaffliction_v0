@@ -64,7 +64,7 @@ def process_input_transformation(src=None, dst=None, option=None,
         get_median_blurring_small_noise(src, dst)
         get_canny_edge(src, dst)
 
-        img = process_file(src, dst=ndst, category="Transformed",
+        img = process_file(src, dst=dst, category="Transformed",
                            augmented=False, single=single)
         if openImage is True:
             image_paths = ("_lab.JPG", "_hsv.JPG",

@@ -41,7 +41,7 @@ def process_input_augmentation(src=None, dst=None, option=None,
         get_affine_transformation(src, dst)
         get_perspective_transformation(src, dst)
 
-        img = process_file(src, dst=ndst, category="Augmented",
+        img = process_file(src, dst=dst, category="Augmented",
                            augmented=True, single=single)
         if openImage is True:
             image_paths = ("_contrast.JPG", "_scalezoom.JPG",
