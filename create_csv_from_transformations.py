@@ -31,8 +31,8 @@ def remove_prefixes(categories, prefixes):
 def create_csv_from_random_dataset(arg=None):
     """Plot the attributes' values for training images and classify
     them"""
-    csv_files = glob.glob(f"{arg}/{chosen_category}_*/{chosen_category}_*_Transformed_features_test.csv")
-    print("phrase", f"{arg}/{chosen_category}_*/{chosen_category}_*_Transformed_features_test.csv")
+    csv_files = glob.glob(f"{arg}/**/*_Transformed_features_test.csv")
+    print("phrase", f"{arg}/**/*_Transformed_features_test.csv")
     print("csv files", csv_files)
 
     dfs = []
@@ -61,7 +61,7 @@ def create_csv_from_random_dataset(arg=None):
     # new_df.to_csv("features_not_normalized_validation.csv", mode="w",
     #               header=True, index=False)
 
-    origin_df = z_score_normalize_df(origin_df)
+    # origin_df = z_score_normalize_df(origin_df, chosen_category)
 
     origin_df = origin_df.groupby("Subname").agg({
         'Category': lambda x: x.mode()[0] if len(x.mode()) > 0 else x.iloc[0],
@@ -93,11 +93,11 @@ if __name__ == "__main__":
             for file in files:
                 process_input_transformation(file, openImage=False,
                                                 single=False)
-        # for subdir in subdirs:
-        #     files = glob.glob(f"{subdir}")
-        #     for file in files:
-        #         process_input_augmentation(file, openImage=False,
-        #                                     single=False)
+        for subdir in subdirs:
+            files = glob.glob(f"{subdir}")
+            for file in files:
+                process_input_augmentation(file, openImage=False,
+                                            single=False)
         create_csv_from_random_dataset(arg=argv[1].removeprefix('./'))
 
     except AssertionError as error:

@@ -59,7 +59,8 @@ def train(arg=None):
     # new_df.to_csv("features_not_normalized_validation.csv", mode="w",
     #               header=True, index=False)
 
-    origin_df = z_score_normalize_df(origin_df)
+    origin_df, stats_df = z_score_normalize_df(origin_df, chosen_category)
+
     categories = sorted(origin_df['Category'].unique().tolist())
 
     origin_df = origin_df.groupby("Subname").agg({
@@ -147,7 +148,7 @@ def train(arg=None):
         # Add to existing zip
         with zipfile.ZipFile(zip_path, 'a') as zf:
             zf.write(f'thetas_{chosen_category}.csv')
-        
+            zf.write(f'statistics_{chosen_category}.csv')
             # Add entire folder recursively
             for file in Path(arg).rglob('*'):
                 if file.is_file():
@@ -157,11 +158,15 @@ def train(arg=None):
         print("la")
         with zipfile.ZipFile(zip_path, 'w') as zf:
             zf.write(f'thetas_{chosen_category}.csv')
+            zf.write(f'statistics_{chosen_category}.csv')
             
             for file in Path(arg).rglob('*'):
                 if file.is_file():
                     zf.write(file, arcname=f"{arg}_{chosen_category}")
     file = Path(f"thetas_{chosen_category}.csv")
+    if file.exists():
+        file.unlink()
+    file = Path(f"statistics_{chosen_category}.csv")
     if file.exists():
         file.unlink()
 
